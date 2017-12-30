@@ -1,0 +1,21 @@
+{
+	"name": "sellastica/ecomail",
+	"homepage": "https://github.com/sellastica/ecomail",
+	"license": "proprietary",
+	"authors": [
+		{
+			"name": "Tomáš Krejčí",
+			"homepage": "http://www.sellastica.com"
+		}
+	],
+	"require": {
+		"php": ">=7.1"
+	},
+	"require-dev": {
+	},
+	"autoload": {
+		"psr-4": {
+			"Sellastica\\Ecomail\\": "src/"
+		}
+	}
+}
