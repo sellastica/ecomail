@@ -101,6 +101,21 @@ class Ecomail implements IEmailProvider
 		return $this->lastHeaders;
 	}
 
+	// === Ping ===
+
+	/**
+	 * @return bool
+	 */
+	public function ping(): bool
+	{
+		try {
+			$this->get('lists', ['per_page' => 1]);
+			return true;
+		} catch (InvalidCredentialsException $e) {
+			return false;
+		}
+	}
+
 	// === Lists ===
 
 	/**
