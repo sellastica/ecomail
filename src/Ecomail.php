@@ -200,12 +200,13 @@ class Ecomail implements IEmailProvider
 
 	/**
 	 * @param string $listId ID listu
+	 * @param string $email
 	 * @return array
 	 */
-	public function removeSubscriber($listId): array
+	public function removeSubscriber($listId, string $email): array
 	{
 		$url = $this->joinString('lists/', $listId, '/unsubscribe');
-		return $this->delete($url);
+		return $this->delete($url, ['email' => $email]);
 	}
 
 
@@ -448,11 +449,17 @@ class Ecomail implements IEmailProvider
 	 * Pomocná metoda pro DELETE
 	 *
 	 * @param   string $request Požadavek
+	 * @param array|null $body
 	 * @return  array
+	 * @throws \Sellastica\Ecomail\Exception\BadRequestException
+	 * @throws \Sellastica\Ecomail\Exception\InvalidCredentialsException
+	 * @throws \Sellastica\Ecomail\Exception\InvalidResponseException
+	 * @throws \Sellastica\Ecomail\Exception\NotFoundException
+	 * @throws \Sellastica\Ecomail\Exception\UnknownResponseException
 	 */
-	private function delete($request): array
+	private function delete($request, array $body = null): array
 	{
-		return $this->send($request, null, 'delete');
+		return $this->send($request, null, $body, 'delete');
 	}
 
 	/**
@@ -498,10 +505,13 @@ class Ecomail implements IEmailProvider
 		$this->lastResponse = $this->lastResponseRaw = curl_exec($ch);
 		$this->lastStatusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		$errno = curl_errno($ch);
+		$error = curl_error($ch);
 		curl_close($ch);
 
 		if ($errno) {
-			throw new InvalidResponseException('cURL responsed with error code ' . $errno);
+			throw new InvalidResponseException(
+				sprintf('cURL responsed with error code %s: %s', $errno, $error)
+			);
 		} else {
 			switch ($this->lastStatusCode) {
 				case 200:
